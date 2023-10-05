@@ -28,6 +28,8 @@ def json2txt(num_shards=50):
                 text = text.strip()
                 of.write(text + '\n')
 
+    os.rename(data_dir, data_dir+"_tmp")
+
 def DeletePunctuation():
     txt_dir = os.path.join(DATA_CACHE_DIR, "TinyStories_txt")
     txt_file = sorted(glob.glob(os.path.join(txt_dir, "*.txt")))
@@ -53,14 +55,14 @@ if __name__ == "__main__":
 
     text_dir = os.path.join(DATA_CACHE_DIR, "TinyStories_txt")
     text_file = sorted(glob.glob(os.path.join(text_dir, "*_wop.txt")))
-    phonemes_dir = os.path.join(DATA_CACHE_DIR, "TinyStories_phonemes")
+    phonemes_dir = os.path.join(DATA_CACHE_DIR, "TinyStories_all_data")
     phonemes_file = []
 
     if not os.path.exists(phonemes_dir):
         os.mkdir(phonemes_dir)
 
     for shard in text_file:
-        tmp = shard.replace('TinyStories_txt', 'TinyStories_phonemes')
+        tmp = shard.replace('TinyStories_txt', 'TinyStories_all_data')
         tmp = tmp.replace('_wop.txt', '.txt')
         phonemes_file.append(tmp)
 
