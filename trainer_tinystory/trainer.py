@@ -127,8 +127,6 @@ def train_launcher(env_params, vocab_params, model_params, optimizer_params, tra
         model._ddp_params_and_buffers_to_ignore = {'freqs_cis'}
         model = DDP(model, device_ids=[ddp_local_rank])
 
-    print('LOG SW: ', ddp) #False
-
     # 5. Most Important !!!. Start training loop.
     # Fetch data batch
     train_batch_iter = iter_batches(split='train')
@@ -154,7 +152,8 @@ def train_launcher(env_params, vocab_params, model_params, optimizer_params, tra
 
         # evaluate the loss on train/val sets and write checkpoints
         if iter_num % trainer_params['eval_interval'] == 0 and master_process:
-            #losses = estimate_loss(model, trainer_params['eval_iters'], iter_batches, ctx)
+            train_val_loss = estimate_loss(model, trainer_params['eval_iters'], iter_batches, ctx)
+            '''
             # Start Evaluation
             train_val_loss = {}
             model.eval()
@@ -167,9 +166,9 @@ def train_launcher(env_params, vocab_params, model_params, optimizer_params, tra
                         logits, loss = model(X, Y)
                     iter_loss[k] = loss.item()
                 train_val_loss[split]=iter_loss.mean()
-            
-            print('Log SW: ', best_val_loss)
+            '''
             model.train()
+
             print(f"step {iter_num}: train loss {train_val_loss['train']:.4f}, train ppl {math.exp(train_val_loss['train']):.4f}, val loss {train_val_loss['val']:.4f}, val ppl {math.exp(train_val_loss['val']):.4f}")
             if wandb_params['wandb_log']:
                 try:

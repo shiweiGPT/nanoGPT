@@ -41,14 +41,14 @@ board_writer = SummaryWriter() # Tensor Borad Writer
 
 # -----------------------------------------------------------------------------
 # 1. I/O
-out_dir = "./data/phonemes/out"
-ckpt = "ckpt_t512l6h6.pt"
-eval_interval = 2000
+out_dir = "./data/phonemes/model"
+ckpt = "gpt_512t6l6h.pt"
+eval_interval = 100
 log_interval = 1
 eval_iters = 200
-eval_only = False  # if True, script exits right after the first eval
+eval_only = True  # if True, script exits right after the first eval
 always_save_checkpoint = False  # if True, always save a checkpoint after each eval
-init_from = "scratch"  # 'scratch' or 'resume' # TODO: GPT2 support
+init_from = "resume"  # 'scratch' or 'resume' # TODO: GPT2 support
 
 # -----------------------------------------------------------------------------
 # 2. wandb
@@ -96,7 +96,7 @@ min_lr = 6e-5 if model_type == "gpt" else 0.0  # minimum learning rate, should b
 # 7. system
 device = "cuda"  # examples: 'cpu', 'cuda', 'cuda:0', 'cuda:1' etc., or try 'mps' on macbooks
 dtype = "bfloat16"  # float32|bfloat16|float16
-compile = True  # use PyTorch 2.0 to compile the model to be faster
+compile = False  # use PyTorch 2.0 to compile the model to be faster
 
 # -----------------------------------------------------------------------------
 # 8. start configuration
@@ -164,6 +164,7 @@ iter_batches = partial(
     vocab_source=vocab_source,
     device=device,
     num_workers=0,
+    data_path= "./data/phonemes"
 )
 
 # init these up here, can override if init_from='resume' (i.e. from a checkpoint)
@@ -300,6 +301,7 @@ while True:
     # evaluate the loss on train/val sets and write checkpoints
     if iter_num % eval_interval == 0 and master_process:
         losses = estimate_loss()
+        print('Log SW: ', best_val_loss)
         print(f"step {iter_num}: train loss {losses['train']:.4f}, train ppl {math.exp(losses['train']):.4f}, val loss {losses['val']:.4f}, val ppl {math.exp(losses['val']):.4f}")
         if wandb_log:
             try:
@@ -329,7 +331,7 @@ while True:
                 print(f"saving checkpoint to {out_dir}")
                 torch.save(checkpoint, os.path.join(out_dir, ckpt))
                 #model_export(raw_model, os.path.join(out_dir, "model.bin"), version=0)
-    if iter_num == 0 and eval_only:
+    if eval_only:
         break
 
     # forward backward update, with optional gradient accumulation to simulate larger batch size

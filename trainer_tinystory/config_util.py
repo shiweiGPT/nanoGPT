@@ -98,6 +98,8 @@ def setup_model_and_optimizer(model_params, optimizer_params, init_from, ckpt_pa
             model = Transformer(modle_config)
         iter_num = checkpoint["iter_num"]
         best_val_loss = checkpoint["best_val_loss"]
+        state_dict = checkpoint["model"]
+        model.load_state_dict(state_dict)
             
     model.to(device)
     optimizer = model.configure_optimizers(

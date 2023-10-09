@@ -165,8 +165,9 @@ class PretokDataset(torch.utils.data.IterableDataset):
     Loads pretokenized examples from disk and yields them as PyTorch tensors.
     """
 
-    def __init__(self, split, max_seq_len, vocab_size, vocab_source):
+    def __init__(self, data_path, split, max_seq_len, vocab_size, vocab_source):
         super().__init__()
+        self.path = data_path
         self.split = split
         self.max_seq_len = max_seq_len
         self.vocab_size = vocab_size
@@ -182,13 +183,14 @@ class PretokDataset(torch.utils.data.IterableDataset):
         seed = 42 + worker_id + 1337 * rank
         rng = random.Random(seed)
         print(f"Created a PretokDataset with rng seed {seed}")
+        print(f"Restore vocabulary from {self.path}")
         if self.vocab_source == "llama2":
             # the .bin files are right along the .json files
-            bin_dir = os.path.join(DATA_CACHE_DIR, "TinyStories_all_data")
+            bin_dir = os.path.join(self.path, "TinyStories_all_data")
             shard_filenames = sorted(glob.glob(os.path.join(bin_dir, "*.bin")))
         elif self.vocab_source == "custom":
             # the .bin files are in tok{N} directory
-            bin_dir = os.path.join(DATA_CACHE_DIR, f"tok{self.vocab_size}")
+            bin_dir = os.path.join(self.path, f"tok{self.vocab_size}")
             shard_filenames = sorted(glob.glob(os.path.join(bin_dir, "*.bin")))
         # train/test split. let's use only shard 0 for test split, rest train
         shard_filenames = shard_filenames[1:] if self.split == "train" else shard_filenames[:1]
