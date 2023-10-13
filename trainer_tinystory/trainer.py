@@ -82,8 +82,8 @@ def train_launcher(env_params, vocab_params, model_params, optimizer_params, tra
     tokens_per_iter = gradient_accumulation_steps * ddp_world_size * batch_size * max_seq_len
 
     if master_process:
-        print(f"tokens per iteration will be: {tokens_per_iter:,}")
-        print(f"breaks down as: {gradient_accumulation_steps} grad accum steps * {ddp_world_size} processes * {batch_size} batch size * {max_seq_len} max seq len")
+        #print(f"tokens per iteration will be: {tokens_per_iter:,}")
+        #print(f"breaks down as: {gradient_accumulation_steps} grad accum steps * {ddp_world_size} processes * {batch_size} batch size * {max_seq_len} max seq len")
         os.makedirs(env_params['model_dir'], exist_ok=True)
 
     # 2. Setup Pytorch mix-precision training (FP32 + BF16)
@@ -186,8 +186,12 @@ def train_launcher(env_params, vocab_params, model_params, optimizer_params, tra
                         "iter_num": iter_num,
                         "best_val_loss": best_val_loss,
                     }
-                    print(f"saving checkpoint to {os.path.join(env_params['model_dir'], env_params['ckpt'])}")
-                    torch.save(checkpoint, os.path.join(env_params['model_dir'], env_params['ckpt']))
+                    model_path = env_params['model_dir'] + '/' + str(model_params['n_layers']) + '_' +str(model_params['n_heads']) +  '_' + \
+                                 str(model_params['n_embd']) + '_' + env_params['ckpt']
+                    print(f"saving checkpoint to {model_path}")
+                    torch.save(checkpoint, model_path)
+                    #print(f"saving checkpoint to {os.path.join(env_params['model_dir'], env_params['ckpt'])}")
+                    #torch.save(checkpoint, os.path.join(env_params['model_dir'], env_params['ckpt']))
         if trainer_params['eval_only']:
             break
 
@@ -231,7 +235,7 @@ def train_launcher(env_params, vocab_params, model_params, optimizer_params, tra
                 mfu = raw_model.estimate_mfu(batch_size * gradient_accumulation_steps, dt)
                 running_mfu = mfu if running_mfu == -1.0 else 0.9 * running_mfu + 0.1 * mfu
             # print
-            print(f"{iter_num} | loss {lossf:.4f} | lr {lr:e} | {dt*1000:.2f}ms | mfu {running_mfu*100:.2f}%")
+            #print(f"{iter_num} | loss {lossf:.4f} | lr {lr:e} | {dt*1000:.2f}ms | mfu {running_mfu*100:.2f}% | layers {model_params['n_layers']} | heads {model_params['n_heads']} | embd {model_params['n_embd']}")
             # tensorboard record
             board_writer.add_scalar("Loss/train", lossf, iter_num)
         iter_num += 1
@@ -247,8 +251,11 @@ def train_launcher(env_params, vocab_params, model_params, optimizer_params, tra
 
     if ddp:
         destroy_process_group()
+
+    print('Training Ready')
     
-    return 0
+    return best_val_loss
 
 if __name__ == '__main__':
+    #print(get_params(params_config=PARAMS_CONFIG))
     train_launcher(**get_params(params_config=PARAMS_CONFIG))

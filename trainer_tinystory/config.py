@@ -236,6 +236,63 @@ PARAMS_CONFIG = {
             'dest': 'always_save_ckpt'
         },
     },
+    # rl-specific
+    'rl_params': {
+        '--agent_type': {
+            'type': str,
+            'default': 'ppo',
+            'help': 'agent type',
+            'dest': 'agent_type'
+        },
+        '--rl_timesteps': {
+            'type': int,
+            'default': 100,
+            'help': 'the training step for rl agent',
+            'dest': 'rl_timesteps'
+        },
+        '--ppl_factor': {
+            'type': float,
+            'default': 0.5,
+            'help': 'scaling factor for ppl_reward. fall in range [0, 1]',
+            'dest': 'ppl_factor'
+        },
+        '--obs_n_layers': {
+            'type': int,
+            'default': 12,
+            'help': 'set the max layer number for observation space',
+            'dest': 'obs_n_layers'
+        },
+        '--obs_n_heads': {
+            'type': int,
+            'default': 12,
+            'help': 'set the max head number for observation space',
+            'dest': 'obs_n_heads'
+        },
+        '--obs_n_embd_per_head': {
+            'type': int,
+            'default': 128,
+            'help': 'set the max embedding size per head for observation space',
+            'dest': 'obs_n_embd_per_head'
+        },
+        '--n_layers_step': {
+            'type': int,
+            'default': 1,
+            'help': 'fixed step to update layer configuration',
+            'dest': 'n_layers_step'
+        },
+        '--n_heads_step': {
+            'type': int,
+            'default': 1,
+            'help': 'fixed step to update head configuration',
+            'dest': 'n_heads_step'
+        },
+        '--n_embd_per_head_step': {
+            'type': int,
+            'default': 1,
+            'help': 'fixed step to update embedding configuration',
+            'dest': 'n_embd_per_head_step'
+        },
+    },
     # wandb-specific for training visulization
     # default using Pytorch Tensorborad
     'wandb_params': {
