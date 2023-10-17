@@ -277,19 +277,19 @@ PARAMS_CONFIG = {
         '--n_layers_step': {
             'type': int,
             'default': 1,
-            'help': 'fixed step to update layer configuration',
+            'help': 'the maximum step to update layer configuration',
             'dest': 'n_layers_step'
         },
         '--n_heads_step': {
             'type': int,
             'default': 1,
-            'help': 'fixed step to update head configuration',
+            'help': 'the maximum step to update head configuration',
             'dest': 'n_heads_step'
         },
         '--n_embd_per_head_step': {
             'type': int,
             'default': 1,
-            'help': 'fixed step to update embedding configuration',
+            'help': 'the maximum step to update embedding configuration',
             'dest': 'n_embd_per_head_step'
         },
     },

@@ -17,9 +17,9 @@ vocab_params="
 
 model_params="
 --model_type gpt \
---n_layers 7 \
---n_heads 6 \
---n_embd 384 \
+--n_layers 2 \
+--n_heads 2 \
+--n_embd 128 \
 --max_seq_len 256 \
 --dropout 0.0 \
 "
@@ -47,15 +47,15 @@ trainer_params="
 "
 
 rl_params="
---agent_type ppo \
---rl_timesteps 40 \
---ppl_factor 0.7 \
+--agent_type a2c \
+--rl_timesteps 200 \
+--ppl_factor 0.8 \
 --obs_n_layers 6 \
 --obs_n_heads 6 \
 --obs_n_embd_per_head 64 \
---n_layers_step 1 \
---n_heads_step 1 \
---n_embd_per_head_step 2
+--n_layers_step 3 \
+--n_heads_step 3 \
+--n_embd_per_head_step 10
 "
 
 #echo "Start Training ..."
